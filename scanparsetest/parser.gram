@@ -1,0 +1,363 @@
+/*edited by Ryo and Miki*/
+
+%
+{
+	/*
+	 *	parser.gram
+	 *      LKR 8/2015 comments edited
+	 */
+
+	/*
+	#define YYSTYPE PPTreeNodeCls
+	*/
+
+	using namespace std;
+	void printReduce(char *);
+	extern char *textline; // Defined in scanner.specs
+	extern int epcMode;	   // switch between imperative&declarative
+	extern PSymtable symtable;
+	// typedef SymtabEntry class * PSymtabEntry;
+
+	// The token object has these getters.  lextok is defined.
+	// PLexToken lextok;
+	//    char * lextok->getLexeme();
+	//    int lextok->getLineNo();
+	//    int lextok->getToken();
+	//    int lextok->getSubcode();
+	%
+}
+
+% token PROGRAMTK % token BEGINTK ENDTK % token VARTK % token SCTK COLONTK % token ASGTK % token DOTTK % token IDTK % token CONTK % token LPARENTK % token RPARENTK % token WRITETK WRITELNTK % token MULOPTK % token ADDOPTK % token ELSETK IFTK THENTK % token STDTYPETK % token COMMATK % token RETURNTK % token FUNCTIONTK % token PROCEDURETK % token WHILETK % token ARRAYTK % token OFTK % token DOTK % token READTK % token READLNTK % token RELOPTK % token UNARYTK % token LEFTBRACKETTK % token RIGHTBRACKETTK % token DOTDOTTK
+
+	% start pgm % %
+
+	pgm : PROGRAMTK IDTK SCTK body DOTTK
+{
+	printReduce("pgm -> PROGRAM ID ; body .");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+body : dclpart compstmt
+{
+	printReduce("body -> dclpart compstmt");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| compstmt
+{
+	printReduce("body -> compstmt");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+dclpart : VARTK dcls
+{
+	printReduce("dclpart -> VAR dcls");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| subdcls
+{
+	printReduce("dclpart -> subdcls");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| VARTK dcls subdcls
+{
+	printReduce("dclpart -> VAR dcls subdcls");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+dcls : dcl
+{
+	printReduce("dcls -> dcl");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| dcls dcl
+{
+	printReduce("dcls -> dcls dcl");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+dcl : idlist COLONTK type SCTK
+{
+	printReduce("dcl -> idlist : type ;");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+idlist : IDTK
+{
+	printReduce("idlist -> ID");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| idlist COMMATK IDTK
+{
+	printReduce("idlist -> idlist , ID");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+type : STDTYPETK
+{
+	printReduce("type -> STDTYPE");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| arraytype
+{
+	printReduce("type -> arraytype");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+arraytype : ARRAYTK LEFTBRACKETTK CONTK DOTDOTTK CONTK RIGHTBRACKETTK OFTK STDTYPETK
+{
+	printReduce("arraytype -> ARRAY [ CON .. CON ] OF STDTYPE");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+subdcls : subdcl
+{
+	printReduce("subdcls -> subdcl");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| subdcls subdcl
+{
+	printReduce("subdcls -> subdcls subdcl");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+subdcl : subhead SCTK body SCTK
+{
+	printReduce("subdcl -> subhead ; body ;");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+subhead : FUNCTIONTK IDTK args COLONTK STDTYPETK
+{
+	printReduce("subhead -> FUNCTION ID args COLON STDTYPE");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| PROCEDURETK IDTK args
+{
+	printReduce("subhead -> PROCEDURE ID args");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+args : LPARENTK dcls RPARENTK
+{
+	printReduce("args -> ( dcls )");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| LPARENTK RPARENTK
+{
+	printReduce("args -> ( )");
+};
+compstmt : BEGINTK stmts ENDTK
+{
+	printReduce("compstmt -> BEGIN stmts END");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+stmts : stmt
+{
+	printReduce("stmts -> stmt");
+}
+| stmts SCTK stmt
+{
+	printReduce("stmts -> stmts ; stmt");
+};
+stmt : elstmt
+{
+	printReduce("stmt -> elstmt ");
+}
+| IFTK expr THENTK stmt ELSETK stmt
+{
+	printReduce("stmt -> IF expr THEN stmt ELSE stmt");
+}
+| IFTK expr THENTK stmt
+{
+	printReduce("stmt -> IF expr THEN stmt");
+}
+| WHILETK expr DOTK stmt
+{
+	printReduce("stmt -> WHILE expr DO stmt");
+};
+elstmt : vbl ASGTK expr
+{
+	printReduce("elstmt -> vbl := expr");
+	cout << "assign;" << endl; // code translation!
+}
+| RETURNTK expr
+{
+	printReduce("elstmt -> RETURN expr");
+}
+| RETURNTK
+{
+	printReduce("elstmt -> RETURN");
+}
+| procfunc
+{
+	printReduce("elstmt -> procfunc");
+}
+| compstmt
+{
+	printReduce("elstmt -> compstmt");
+}
+| READTK LPARENTK vbllist RPARENTK
+{
+	printReduce("elstmt -> READ ( vbllist )");
+}
+| READLNTK LPARENTK vbllist RPARENTK
+{
+	printReduce("elstmt -> READLN ( vbllist )");
+}
+| READLNTK LPARENTK RPARENTK
+{
+	printReduce("elstmt -> READLN ( )");
+}
+| WRITETK LPARENTK exprlist RPARENTK
+{
+	printReduce("elstmt -> WRITE ( exprlist )");
+}
+| WRITELNTK LPARENTK exprlist RPARENTK
+{
+	printReduce("elstmt -> WRITELN ( exprlist )");
+}
+| WRITELNTK LPARENTK RPARENTK
+{
+	printReduce("elstmt -> WRITELN ( )");
+};
+vbl : IDTK
+{
+	printReduce("vbl -> ID");
+	cout << "push(" << ((PSymtabEntry)$1)->getAddress() << ");" << endl;
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| IDTK LEFTBRACKETTK expr RIGHTBRACKETTK
+{
+	printReduce("vbl -> ID [ expr ]");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+vbllist : vbl
+{
+	printReduce("vbllist -> vbl");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| vbllist COMMATK vbl
+{
+	printReduce("vbllist -> vbllist , vbl");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+procfunc : IDTK LPARENTK RPARENTK
+{
+	printReduce("procfunc -> ID ( )");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+}
+| IDTK LPARENTK exprlist RPARENTK
+{
+	printReduce("procfunc -> ID ( exprlist )");
+	cout << "/*";
+	symtable->dump();
+	cout << "*/";
+};
+exprlist : expr
+{
+	printReduce("exprlist -> expr");
+}
+| exprlist COMMATK expr
+{
+	printReduce("exprlist -> exprlist , expr");
+};
+expr : simexp
+{
+	printReduce("expr -> simexp");
+}
+| simexp RELOPTK expr
+{
+	printReduce("expr -> simexp RELOP expr");
+};
+simexp : term
+{
+	printReduce("simexp -> term");
+}
+| UNARYTK term
+{
+	printReduce("simexp -> UNARY term");
+}
+| simexp ADDOPTK term
+{
+	printReduce("simexp -> simexp ADDOP term");
+};
+term : factor
+{
+	printReduce("term -> factor");
+}
+| term MULOPTK factor
+{
+	printReduce("term -> term MULOP factor");
+	cout << "binary(*);" << endl; // code translation
+};
+factor : vbl
+{
+	printReduce("factor -> vbl ");
+	cout << "deref;" << endl; // code translation
+}
+| CONTK
+{
+	printReduce("factor -> CON");
+	lextok = (PLexToken)$1;
+	cout << "push(" << lextok->getLexeme() << ");" << endl; // code translation
+	/*note that we're just using the literal from Pascal
+	//if we want the integer value use (int)(lextok->getLexeme())*/
+}
+| LPARENTK expr RPARENTK
+{
+	printReduce("factor -> ( expr )");
+}
+| procfunc
+{
+	printReduce("factor -> procfunc");
+};
+
+% %
+	void printReduce(const char *reduction)
+{
+	if (Options::flags('r'))
+	{
+		cout << "//----Reduce: " << reduction << endl;
+	}
+}

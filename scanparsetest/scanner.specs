@@ -1,0 +1,368 @@
+/*
+Edited by Ryo and Miki
+*/
+
+¥
+%{
+/* 
+%option lex-compat
+%option noyywrap
+ *	scanner.specs
+ *      LKR 8/2015 comments edited
+ */
+
+#include "y.tab.h"
+
+#include "../ctrl/ctrl.h"
+#include "../symtab/symtab.h"
+
+PLexToken lextok; //track the token being generated; 
+			//it can be used to guide what token follows
+
+int epcMode; //global flag for imperative vs& declarative mode
+int prev_token;
+
+extern int yylval; //added from earlier
+PSymtabEntry symtabEntry;
+extern PSymtable symtable;
+using namespace std;
+%}
+
+digit			[0-9]
+digits			{digit}+
+letter			[A-Za-z]
+letter_or_digit 	({letter}|{digit})
+ident			{letter}{letter_or_digit}*
+whitespace		[ \t]
+comment			"{"[^\}]*"}"
+cr			[\n]
+other			.
+cnstant			{digits}("."{digits})?([Ee]("+"|"-")?{digits})?
+
+%%
+
+{whitespace}	{ckout();
+		}
+
+{comment}	{ckout();
+                }
+
+{cr}		{ckout();
+		}
+
+".."             {ckout();
+                 lextok = new LexToken(yylineno, DOTDOTTK, yytext);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+","             {ckout();
+                 lextok = new LexToken(yylineno, COMMATK, yytext);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"["		{ckout();
+                 lextok = new LexToken(yylineno, LEFTBRACKETTK, yytext);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"]"		{ckout();
+                 lextok = new LexToken(yylineno, RIGHTBRACKETTK, yytext);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+";"		{ckout();
+		 lextok = new LexToken(yylineno, SCTK, yytext);
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+		}
+":"		{ckout();
+		 lextok = new LexToken(yylineno, COLONTK, yytext);
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+		}
+
+"("		{ckout();
+		 lextok =  new LexToken(yylineno, LPARENTK, yytext);
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+		}
+
+")"		{ckout();
+		 lextok = new LexToken(yylineno, RPARENTK, yytext);
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+		}
+
+":="		{ckout();
+		 lextok = new LexToken(yylineno, ASGTK, yytext);
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+		}
+
+"."		{ckout();
+		 lextok = new LexToken(yylineno, DOTTK, yytext);
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+		}
+
+"*"		{ckout();
+		 lextok = new LexToken(yylineno, MULOPTK, yytext, 2);
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+		}
+
+"+"             {ckout();
+		 switch(prev_token){
+			case CONTK:
+				lextok = new LexToken(yylineno, ADDOPTK, yytext, 2);
+				break;
+			case IDTK:
+				lextok = new LexToken(yylineno, ADDOPTK, yytext, 2);
+				break;
+			case RIGHTBRACKETTK:
+				lextok = new LexToken(yylineno, ADDOPTK, yytext, 2);
+				break;
+			case RPARENTK:
+				lextok = new LexToken(yylineno, ADDOPTK, yytext, 2);
+				break;
+			default:
+				lextok = new LexToken(yylineno, UNARYTK, yytext, 2);
+		}
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"-"             {ckout();
+		 switch(prev_token){
+			case CONTK:
+                                lextok = new LexToken(yylineno, UNARYTK, yytext, 3);
+				break;
+                        case IDTK:
+                                lextok = new LexToken(yylineno, ADDOPTK, yytext, 3);
+                                break;
+                        case RIGHTBRACKETTK:
+                                lextok = new LexToken(yylineno, ADDOPTK, yytext, 3);
+				break;
+                        case RPARENTK:
+                                lextok = new LexToken(yylineno, ADDOPTK, yytext, 3);
+				break;
+                        default:
+                                lextok = new LexToken(yylineno, UNARYTK, yytext, 3);
+		}
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"/"             {ckout();
+                 lextok = new LexToken(yylineno, MULOPTK, yytext, 5);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"="             {ckout();
+                 lextok = new LexToken(yylineno, RELOPTK, yytext, 1);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"<"             {ckout();
+                 lextok = new LexToken(yylineno, RELOPTK, yytext, 2);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+">"             {ckout();
+                 lextok = new LexToken(yylineno, RELOPTK, yytext, 3);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"<="             {ckout();
+                 lextok = new LexToken(yylineno, RELOPTK, yytext, 4);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+">="             {ckout();
+                 lextok = new LexToken(yylineno, RELOPTK, yytext, 5);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+"<>"             {ckout();
+                 lextok = new LexToken(yylineno, RELOPTK, yytext, 6);
+                 yylval = (long) lextok;
+                 return prev_token=lextok->getToken();
+                }
+
+{cnstant}    	{ckout();
+                   //this only handles integers at the moment
+		   //the regex needs to handle fractions and exponents
+		   int contype = REAL;
+		   if(strchr(yytext,'.')==NULL)contype=INTEGER;
+	     	 lextok = new LexToken(yylineno, CONTK, yytext, contype);
+
+		 yylval = (long) lextok;
+		 return prev_token=lextok->getToken();
+	    	}
+
+{ident} {
+	ckout();
+	// need code to change yytext to lower case
+	char *c = yytext;
+	while (*c)
+	{
+		*c++ = tolower(*c);
+	}
+	// check if string yytext is a reserved word instead.
+	int actual_token = ck_reserved_wd();
+
+	if (actual_token == IDTK)
+	{ //--programmer identifier
+		// is already in symbol table?
+		symtabEntry = symtable->lookup(yytext);
+		// add if not
+		if (symtabEntry == 0)
+		{
+			/* verify that epcMode is declarative (else error)*/
+			if(epcMode != 1){
+				throw "epcMode isn't in declarative";
+			}
+			symtabEntry = new SymtabEntry(yytext);
+			symtable->insert(symtabEntry);
+		}
+		else
+		{
+			/* it's there and so verify that in imperative mode
+			 otherwise error*/
+			if(epcMode != 0){
+				throw "epcMode isn't in imperative";
+			}
+		}
+		// so yylval is the address of symbol table entry of id
+		lextok = new LexToken(yylineno, actual_token, yytext,
+							  (long)symtabEntry);
+	}
+	else
+	{
+		// check if PROGRAMTK PROCEDURETK or FUNCTIONTK
+		// and set epcMode to true(1) as declarative
+		//
+		// else check if BEGINTK and
+		// set epcMode to false(0) as imperative
+		switch(actual_token){
+			case PROGRAMTK:
+			case PROCEDURETK:
+			case FUNCTIONTK:
+				epcMode = 1;
+			break;
+			case BEGINTK:
+				epcMode = 0;
+			break;
+		}
+
+		//  handle reserved word and specific yylval of reserved word
+		lextok = new LexToken(yylineno, actual_token, yytext, yylval);
+	}
+
+	yylval = (long)symtabEntry; // this is different!
+	return prev_token = lextok->getToken();
+}
+
+{other}	    {ckout();
+	     //this should not really be tapped nor return anything 
+	     lextok = new LexToken(yylineno, yytext[0], yytext);
+	     //return yytext[0];
+	    }
+
+%%
+
+#include <string.h>
+char *textline = new char[257];
+
+void ckout() {
+   textline = strcat(textline,yytext); //essentially copy tokens to output line
+   if (yytext[0] == '\n') {
+	   // trace source line if option chosen
+       if (Options::flags('l')) {  //Line list option is an l
+  	   cout << "//====LINE[";
+	   cout.width(5);
+	   cout <<  yylineno -1 << "]    " << textline ;
+       }
+       textline[0] = '\0'; 
+   }
+}
+
+struct rwtable_str {
+    const char *rw_name;	/* lexeme */
+    int  rw_yylex;	/* token code ...TK */
+    int  rw_yylval;     /* yylval subcode */
+};
+
+/*KEYWORDS (first column) MUST BE SORTED IN ALPHABETICAL ORDER*/
+rwtable_str rwtable[] = {
+ // lowercase keyword | parser constant|subcode
+    "",                 IDTK,           0,
+    "and",              MULOPTK,        1,
+    "array",            ARRAYTK,        0,
+    "begin",            BEGINTK,        0,
+    "char",             STDTYPETK,      3,
+    "div",              MULOPTK,        4,
+    "do",               DOTK,           0,
+    "else",             ELSETK,         0,
+    "end",              ENDTK,          0,
+    "function",         FUNCTIONTK,     0,
+    "if",               IFTK,           0,
+    "integer",          STDTYPETK,      1,
+    "mod",              MULOPTK,        3,
+    "not",              UNARYTK,        1,
+    "of",               OFTK,           0,
+    "or",               ADDOPTK,        1,
+    "procedure",        PROCEDURETK,    0,
+    "program",          PROGRAMTK,      0,
+    "read",             READTK,         0,
+    "readln",           READLNTK,       0,
+    "real",             STDTYPETK,      2,
+    "return",           RETURNTK,       0,
+    "string",           STDTYPETK,      4,
+    "then",             THENTK,         0,
+    "var",              VARTK,          0,
+    "while",            WHILETK,        0,
+    "write",            WRITETK,        0,
+    "writeln",          WRITELNTK,      0
+};
+
+#define LEN(x) 		(sizeof(x)/sizeof((x)[0]))
+#define ENDTABLE(v)	(v - 1 + LEN(v))
+
+int ck_reserved_wd() {
+	rwtable_str	*low = rwtable;
+	rwtable_str	*high = ENDTABLE(rwtable);
+	rwtable_str	*mid;
+	int comp;
+	char temp[80];
+
+	strcpy(temp,yytext);
+
+	   //binary search assuming sorted keywords
+	while (low <= high)
+	{	mid = low + (high-low)/2;
+		
+		if ((comp=strcmp(mid->rw_name, yytext)) == 0){
+			yylval = mid->rw_yylval;
+			return mid->rw_yylex; /*found reserved word*/
+		}
+		else if (comp < 0)
+			low = mid+1;
+		else
+			high = mid-1;
+	}
+	    // if we get here, it's not a keyword
+	yylval = 0;
+	return rwtable->rw_yylex;  // token: IDTK returned but could be PIDTK
+}
+int yywrap(){return(1);}

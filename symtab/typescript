@@ -1,0 +1,51 @@
+Script started on February 24, 2022 05:14:01 PM EST
+inouerx19@Solaris:~/epcproj/symtab$ ./test
+var1
+var1 will be added to the table.found=0
+var2
+var2 will be added to the table.found=0
+var3
+var3 will be added to the table.found=0
+var1
+var1 is in the table @ 134627208
+input the value
+1234
+var2
+var2 is in the table @ 134627248
+input the value
+123e4
+var3
+var3 is in the table @ 134627288
+input the value
+var123.4
+var   var3
+var3 is in the table @ 134627288
+input the value
+var   123.4
+exit
+var1: 
+SymType=0
+DataType=0
+[0:0]
+value: 1234
+realvalue: 
+address: 1
+
+var2: 
+SymType=0
+DataType=0
+[0:0]
+value: 0
+realvalue: 123e4
+address: 2
+
+var3: 
+SymType=0
+DataType=0
+[0:0]
+value: 0
+realvalue: 123.4
+address: 3
+
+inouerx19@Solaris:~/epcproj/symtab$ exit
+script done on February 24, 2022 05:15:26 PM EST

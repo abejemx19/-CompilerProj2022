@@ -1,0 +1,1221 @@
+
+state 0
+	$accept : _pgm $end 
+
+	PROGRAMTK  shift 2
+	.  error
+
+	pgm  goto 1
+
+state 1
+	$accept :  pgm_$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	pgm :  PROGRAMTK_IDTK SCTK body DOTTK 
+
+	IDTK  shift 3
+	.  error
+
+
+state 3
+	pgm :  PROGRAMTK IDTK_SCTK body DOTTK 
+
+	SCTK  shift 4
+	.  error
+
+
+state 4
+	pgm :  PROGRAMTK IDTK SCTK_body DOTTK 
+
+	BEGINTK  shift 10
+	VARTK  shift 8
+	FUNCTIONTK  shift 13
+	PROCEDURETK  shift 14
+	.  error
+
+	body  goto 5
+	dclpart  goto 6
+	compstmt  goto 7
+	subdcls  goto 9
+	subdcl  goto 11
+	subhead  goto 12
+
+state 5
+	pgm :  PROGRAMTK IDTK SCTK body_DOTTK 
+
+	DOTTK  shift 15
+	.  error
+
+
+state 6
+	body :  dclpart_compstmt 
+
+	BEGINTK  shift 10
+	.  error
+
+	compstmt  goto 16
+
+state 7
+	body :  compstmt_    (3)
+
+	.  reduce 3
+
+
+state 8
+	dclpart :  VARTK_dcls 
+	dclpart :  VARTK_dcls subdcls 
+
+	IDTK  shift 20
+	.  error
+
+	dcls  goto 17
+	dcl  goto 18
+	idlist  goto 19
+
+state 9
+	dclpart :  subdcls_    (5)
+	subdcls :  subdcls_subdcl 
+
+	FUNCTIONTK  shift 13
+	PROCEDURETK  shift 14
+	.  reduce 5
+
+	subdcl  goto 21
+	subhead  goto 12
+
+state 10
+	compstmt :  BEGINTK_stmts ENDTK 
+
+	BEGINTK  shift 10
+	IDTK  shift 36
+	WRITETK  shift 33
+	WRITELNTK  shift 34
+	IFTK  shift 25
+	RETURNTK  shift 28
+	WHILETK  shift 35
+	READTK  shift 31
+	READLNTK  shift 32
+	.  error
+
+	compstmt  goto 30
+	stmts  goto 22
+	stmt  goto 23
+	elstmt  goto 24
+	while  goto 26
+	vbl  goto 27
+	procfunc  goto 29
+
+state 11
+	subdcls :  subdcl_    (15)
+
+	.  reduce 15
+
+
+state 12
+	subdcl :  subhead_SCTK body SCTK 
+
+	SCTK  shift 37
+	.  error
+
+
+state 13
+	subhead :  FUNCTIONTK_IDTK args COLONTK STDTYPETK 
+
+	IDTK  shift 38
+	.  error
+
+
+state 14
+	subhead :  PROCEDURETK_IDTK args 
+
+	IDTK  shift 39
+	.  error
+
+
+state 15
+	pgm :  PROGRAMTK IDTK SCTK body DOTTK_    (1)
+
+	.  reduce 1
+
+
+state 16
+	body :  dclpart compstmt_    (2)
+
+	.  reduce 2
+
+
+state 17
+	dclpart :  VARTK dcls_    (4)
+	dclpart :  VARTK dcls_subdcls 
+	dcls :  dcls_dcl 
+
+	IDTK  shift 20
+	FUNCTIONTK  shift 13
+	PROCEDURETK  shift 14
+	.  reduce 4
+
+	subdcls  goto 40
+	dcl  goto 41
+	idlist  goto 19
+	subdcl  goto 11
+	subhead  goto 12
+
+state 18
+	dcls :  dcl_    (7)
+
+	.  reduce 7
+
+
+state 19
+	dcl :  idlist_COLONTK type SCTK 
+	idlist :  idlist_COMMATK IDTK 
+
+	COLONTK  shift 42
+	COMMATK  shift 43
+	.  error
+
+
+state 20
+	idlist :  IDTK_    (10)
+
+	.  reduce 10
+
+
+state 21
+	subdcls :  subdcls subdcl_    (16)
+
+	.  reduce 16
+
+
+state 22
+	compstmt :  BEGINTK stmts_ENDTK 
+	stmts :  stmts_SCTK stmt 
+
+	ENDTK  shift 44
+	SCTK  shift 45
+	.  error
+
+
+state 23
+	stmts :  stmt_    (23)
+
+	.  reduce 23
+
+
+state 24
+	stmt :  elstmt_    (25)
+
+	.  reduce 25
+
+
+state 25
+	stmt :  IFTK_expr then stmt else stmt 
+	stmt :  IFTK_expr then stmt 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 46
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 26
+	stmt :  while_expr do stmt 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 55
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 27
+	elstmt :  vbl_ASGTK expr 
+
+	ASGTK  shift 56
+	.  error
+
+
+state 28
+	elstmt :  RETURNTK_expr 
+	elstmt :  RETURNTK_    (35)
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  reduce 35
+
+	expr  goto 57
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 29
+	elstmt :  procfunc_    (36)
+
+	.  reduce 36
+
+
+state 30
+	elstmt :  compstmt_    (37)
+
+	.  reduce 37
+
+
+state 31
+	elstmt :  READTK_$$38 LPARENTK vbllist RPARENTK 
+	$$38 : _    (38)
+
+	.  reduce 38
+
+	$$38  goto 58
+
+32: reduce/reduce conflict (red'ns 40 and 42 ) on LPARENTK
+state 32
+	elstmt :  READLNTK_$$40 LPARENTK vbllist RPARENTK 
+	elstmt :  READLNTK_$$42 LPARENTK RPARENTK 
+	$$40 : _    (40)
+	$$42 : _    (42)
+
+	.  reduce 40
+
+	$$40  goto 59
+	$$42  goto 60
+
+state 33
+	elstmt :  WRITETK_$$44 LPARENTK exprlist RPARENTK 
+	$$44 : _    (44)
+
+	.  reduce 44
+
+	$$44  goto 61
+
+34: reduce/reduce conflict (red'ns 46 and 48 ) on LPARENTK
+state 34
+	elstmt :  WRITELNTK_$$46 LPARENTK exprlist RPARENTK 
+	elstmt :  WRITELNTK_$$48 LPARENTK RPARENTK 
+	$$46 : _    (46)
+	$$48 : _    (48)
+
+	.  reduce 46
+
+	$$46  goto 62
+	$$48  goto 63
+
+state 35
+	while :  WHILETK_    (31)
+
+	.  reduce 31
+
+
+state 36
+	vbl :  IDTK_    (50)
+	vbl :  IDTK_LEFTBRACKETTK expr RIGHTBRACKETTK 
+	procfunc :  IDTK_LPARENTK RPARENTK 
+	procfunc :  IDTK_LPARENTK exprlist RPARENTK 
+
+	LPARENTK  shift 65
+	LEFTBRACKETTK  shift 64
+	.  reduce 50
+
+
+state 37
+	subdcl :  subhead SCTK_body SCTK 
+
+	BEGINTK  shift 10
+	VARTK  shift 8
+	FUNCTIONTK  shift 13
+	PROCEDURETK  shift 14
+	.  error
+
+	body  goto 66
+	dclpart  goto 6
+	compstmt  goto 7
+	subdcls  goto 9
+	subdcl  goto 11
+	subhead  goto 12
+
+state 38
+	subhead :  FUNCTIONTK IDTK_args COLONTK STDTYPETK 
+
+	LPARENTK  shift 68
+	.  error
+
+	args  goto 67
+
+state 39
+	subhead :  PROCEDURETK IDTK_args 
+
+	LPARENTK  shift 68
+	.  error
+
+	args  goto 69
+
+state 40
+	dclpart :  VARTK dcls subdcls_    (6)
+	subdcls :  subdcls_subdcl 
+
+	FUNCTIONTK  shift 13
+	PROCEDURETK  shift 14
+	.  reduce 6
+
+	subdcl  goto 21
+	subhead  goto 12
+
+state 41
+	dcls :  dcls dcl_    (8)
+
+	.  reduce 8
+
+
+state 42
+	dcl :  idlist COLONTK_type SCTK 
+
+	STDTYPETK  shift 71
+	ARRAYTK  shift 73
+	.  error
+
+	type  goto 70
+	arraytype  goto 72
+
+state 43
+	idlist :  idlist COMMATK_IDTK 
+
+	IDTK  shift 74
+	.  error
+
+
+state 44
+	compstmt :  BEGINTK stmts ENDTK_    (22)
+
+	.  reduce 22
+
+
+state 45
+	stmts :  stmts SCTK_stmt 
+
+	BEGINTK  shift 10
+	IDTK  shift 36
+	WRITETK  shift 33
+	WRITELNTK  shift 34
+	IFTK  shift 25
+	RETURNTK  shift 28
+	WHILETK  shift 35
+	READTK  shift 31
+	READLNTK  shift 32
+	.  error
+
+	compstmt  goto 30
+	stmt  goto 75
+	elstmt  goto 24
+	while  goto 26
+	vbl  goto 27
+	procfunc  goto 29
+
+state 46
+	stmt :  IFTK expr_then stmt else stmt 
+	stmt :  IFTK expr_then stmt 
+
+	THENTK  shift 77
+	.  error
+
+	then  goto 76
+
+state 47
+	expr :  simexp_    (58)
+	expr :  simexp_RELOPTK expr 
+	simexp :  simexp_ADDOPTK term 
+
+	ADDOPTK  shift 79
+	RELOPTK  shift 78
+	.  reduce 58
+
+
+state 48
+	simexp :  term_    (60)
+	term :  term_MULOPTK factor 
+
+	MULOPTK  shift 80
+	.  reduce 60
+
+
+state 49
+	simexp :  UNARYTK_term 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	.  error
+
+	vbl  goto 51
+	procfunc  goto 54
+	term  goto 81
+	factor  goto 50
+
+state 50
+	term :  factor_    (63)
+
+	.  reduce 63
+
+
+state 51
+	factor :  vbl_    (65)
+
+	.  reduce 65
+
+
+state 52
+	factor :  CONTK_    (66)
+
+	.  reduce 66
+
+
+state 53
+	factor :  LPARENTK_expr RPARENTK 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 82
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 54
+	factor :  procfunc_    (68)
+
+	.  reduce 68
+
+
+state 55
+	stmt :  while expr_do stmt 
+
+	DOTK  shift 84
+	.  error
+
+	do  goto 83
+
+state 56
+	elstmt :  vbl ASGTK_expr 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 85
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 57
+	elstmt :  RETURNTK expr_    (34)
+
+	.  reduce 34
+
+
+state 58
+	elstmt :  READTK $$38_LPARENTK vbllist RPARENTK 
+
+	LPARENTK  shift 86
+	.  error
+
+
+state 59
+	elstmt :  READLNTK $$40_LPARENTK vbllist RPARENTK 
+
+	LPARENTK  shift 87
+	.  error
+
+
+state 60
+	elstmt :  READLNTK $$42_LPARENTK RPARENTK 
+
+	LPARENTK  shift 88
+	.  error
+
+
+state 61
+	elstmt :  WRITETK $$44_LPARENTK exprlist RPARENTK 
+
+	LPARENTK  shift 89
+	.  error
+
+
+state 62
+	elstmt :  WRITELNTK $$46_LPARENTK exprlist RPARENTK 
+
+	LPARENTK  shift 90
+	.  error
+
+
+state 63
+	elstmt :  WRITELNTK $$48_LPARENTK RPARENTK 
+
+	LPARENTK  shift 91
+	.  error
+
+
+state 64
+	vbl :  IDTK LEFTBRACKETTK_expr RIGHTBRACKETTK 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 92
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 65
+	procfunc :  IDTK LPARENTK_RPARENTK 
+	procfunc :  IDTK LPARENTK_exprlist RPARENTK 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	RPARENTK  shift 93
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 95
+	vbl  goto 51
+	procfunc  goto 54
+	exprlist  goto 94
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 66
+	subdcl :  subhead SCTK body_SCTK 
+
+	SCTK  shift 96
+	.  error
+
+
+state 67
+	subhead :  FUNCTIONTK IDTK args_COLONTK STDTYPETK 
+
+	COLONTK  shift 97
+	.  error
+
+
+state 68
+	args :  LPARENTK_dcls RPARENTK 
+	args :  LPARENTK_RPARENTK 
+
+	IDTK  shift 20
+	RPARENTK  shift 99
+	.  error
+
+	dcls  goto 98
+	dcl  goto 18
+	idlist  goto 19
+
+state 69
+	subhead :  PROCEDURETK IDTK args_    (19)
+
+	.  reduce 19
+
+
+state 70
+	dcl :  idlist COLONTK type_SCTK 
+
+	SCTK  shift 100
+	.  error
+
+
+state 71
+	type :  STDTYPETK_    (12)
+
+	.  reduce 12
+
+
+state 72
+	type :  arraytype_    (13)
+
+	.  reduce 13
+
+
+state 73
+	arraytype :  ARRAYTK_LEFTBRACKETTK CONTK DOTDOTTK CONTK RIGHTBRACKETTK OFTK STDTYPETK 
+
+	LEFTBRACKETTK  shift 101
+	.  error
+
+
+state 74
+	idlist :  idlist COMMATK IDTK_    (11)
+
+	.  reduce 11
+
+
+state 75
+	stmts :  stmts SCTK stmt_    (24)
+
+	.  reduce 24
+
+
+state 76
+	stmt :  IFTK expr then_stmt else stmt 
+	stmt :  IFTK expr then_stmt 
+
+	BEGINTK  shift 10
+	IDTK  shift 36
+	WRITETK  shift 33
+	WRITELNTK  shift 34
+	IFTK  shift 25
+	RETURNTK  shift 28
+	WHILETK  shift 35
+	READTK  shift 31
+	READLNTK  shift 32
+	.  error
+
+	compstmt  goto 30
+	stmt  goto 102
+	elstmt  goto 24
+	while  goto 26
+	vbl  goto 27
+	procfunc  goto 29
+
+state 77
+	then :  THENTK_    (29)
+
+	.  reduce 29
+
+
+state 78
+	expr :  simexp RELOPTK_expr 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 103
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 79
+	simexp :  simexp ADDOPTK_term 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	.  error
+
+	vbl  goto 51
+	procfunc  goto 54
+	term  goto 104
+	factor  goto 50
+
+state 80
+	term :  term MULOPTK_factor 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	.  error
+
+	vbl  goto 51
+	procfunc  goto 54
+	factor  goto 105
+
+state 81
+	simexp :  UNARYTK term_    (61)
+	term :  term_MULOPTK factor 
+
+	MULOPTK  shift 80
+	.  reduce 61
+
+
+state 82
+	factor :  LPARENTK expr_RPARENTK 
+
+	RPARENTK  shift 106
+	.  error
+
+
+state 83
+	stmt :  while expr do_stmt 
+
+	BEGINTK  shift 10
+	IDTK  shift 36
+	WRITETK  shift 33
+	WRITELNTK  shift 34
+	IFTK  shift 25
+	RETURNTK  shift 28
+	WHILETK  shift 35
+	READTK  shift 31
+	READLNTK  shift 32
+	.  error
+
+	compstmt  goto 30
+	stmt  goto 107
+	elstmt  goto 24
+	while  goto 26
+	vbl  goto 27
+	procfunc  goto 29
+
+state 84
+	do :  DOTK_    (32)
+
+	.  reduce 32
+
+
+state 85
+	elstmt :  vbl ASGTK expr_    (33)
+
+	.  reduce 33
+
+
+state 86
+	elstmt :  READTK $$38 LPARENTK_vbllist RPARENTK 
+
+	IDTK  shift 110
+	.  error
+
+	vbl  goto 109
+	vbllist  goto 108
+
+state 87
+	elstmt :  READLNTK $$40 LPARENTK_vbllist RPARENTK 
+
+	IDTK  shift 110
+	.  error
+
+	vbl  goto 109
+	vbllist  goto 111
+
+state 88
+	elstmt :  READLNTK $$42 LPARENTK_RPARENTK 
+
+	RPARENTK  shift 112
+	.  error
+
+
+state 89
+	elstmt :  WRITETK $$44 LPARENTK_exprlist RPARENTK 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 95
+	vbl  goto 51
+	procfunc  goto 54
+	exprlist  goto 113
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 90
+	elstmt :  WRITELNTK $$46 LPARENTK_exprlist RPARENTK 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 95
+	vbl  goto 51
+	procfunc  goto 54
+	exprlist  goto 114
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 91
+	elstmt :  WRITELNTK $$48 LPARENTK_RPARENTK 
+
+	RPARENTK  shift 115
+	.  error
+
+
+state 92
+	vbl :  IDTK LEFTBRACKETTK expr_RIGHTBRACKETTK 
+
+	RIGHTBRACKETTK  shift 116
+	.  error
+
+
+state 93
+	procfunc :  IDTK LPARENTK RPARENTK_    (54)
+
+	.  reduce 54
+
+
+state 94
+	procfunc :  IDTK LPARENTK exprlist_RPARENTK 
+	exprlist :  exprlist_COMMATK expr 
+
+	RPARENTK  shift 117
+	COMMATK  shift 118
+	.  error
+
+
+state 95
+	exprlist :  expr_    (56)
+
+	.  reduce 56
+
+
+state 96
+	subdcl :  subhead SCTK body SCTK_    (17)
+
+	.  reduce 17
+
+
+state 97
+	subhead :  FUNCTIONTK IDTK args COLONTK_STDTYPETK 
+
+	STDTYPETK  shift 119
+	.  error
+
+
+state 98
+	dcls :  dcls_dcl 
+	args :  LPARENTK dcls_RPARENTK 
+
+	IDTK  shift 20
+	RPARENTK  shift 120
+	.  error
+
+	dcl  goto 41
+	idlist  goto 19
+
+state 99
+	args :  LPARENTK RPARENTK_    (21)
+
+	.  reduce 21
+
+
+state 100
+	dcl :  idlist COLONTK type SCTK_    (9)
+
+	.  reduce 9
+
+
+state 101
+	arraytype :  ARRAYTK LEFTBRACKETTK_CONTK DOTDOTTK CONTK RIGHTBRACKETTK OFTK STDTYPETK 
+
+	CONTK  shift 121
+	.  error
+
+
+102: shift/reduce conflict (shift 123, red'n 27) on ELSETK
+state 102
+	stmt :  IFTK expr then stmt_else stmt 
+	stmt :  IFTK expr then stmt_    (27)
+
+	ELSETK  shift 123
+	.  reduce 27
+
+	else  goto 122
+
+state 103
+	expr :  simexp RELOPTK expr_    (59)
+
+	.  reduce 59
+
+
+state 104
+	simexp :  simexp ADDOPTK term_    (62)
+	term :  term_MULOPTK factor 
+
+	MULOPTK  shift 80
+	.  reduce 62
+
+
+state 105
+	term :  term MULOPTK factor_    (64)
+
+	.  reduce 64
+
+
+state 106
+	factor :  LPARENTK expr RPARENTK_    (67)
+
+	.  reduce 67
+
+
+state 107
+	stmt :  while expr do stmt_    (28)
+
+	.  reduce 28
+
+
+state 108
+	elstmt :  READTK $$38 LPARENTK vbllist_RPARENTK 
+	vbllist :  vbllist_COMMATK vbl 
+
+	RPARENTK  shift 124
+	COMMATK  shift 125
+	.  error
+
+
+state 109
+	vbllist :  vbl_    (52)
+
+	.  reduce 52
+
+
+state 110
+	vbl :  IDTK_    (50)
+	vbl :  IDTK_LEFTBRACKETTK expr RIGHTBRACKETTK 
+
+	LEFTBRACKETTK  shift 64
+	.  reduce 50
+
+
+state 111
+	elstmt :  READLNTK $$40 LPARENTK vbllist_RPARENTK 
+	vbllist :  vbllist_COMMATK vbl 
+
+	RPARENTK  shift 126
+	COMMATK  shift 125
+	.  error
+
+
+state 112
+	elstmt :  READLNTK $$42 LPARENTK RPARENTK_    (43)
+
+	.  reduce 43
+
+
+state 113
+	elstmt :  WRITETK $$44 LPARENTK exprlist_RPARENTK 
+	exprlist :  exprlist_COMMATK expr 
+
+	RPARENTK  shift 127
+	COMMATK  shift 118
+	.  error
+
+
+state 114
+	elstmt :  WRITELNTK $$46 LPARENTK exprlist_RPARENTK 
+	exprlist :  exprlist_COMMATK expr 
+
+	RPARENTK  shift 128
+	COMMATK  shift 118
+	.  error
+
+
+state 115
+	elstmt :  WRITELNTK $$48 LPARENTK RPARENTK_    (49)
+
+	.  reduce 49
+
+
+state 116
+	vbl :  IDTK LEFTBRACKETTK expr RIGHTBRACKETTK_    (51)
+
+	.  reduce 51
+
+
+state 117
+	procfunc :  IDTK LPARENTK exprlist RPARENTK_    (55)
+
+	.  reduce 55
+
+
+state 118
+	exprlist :  exprlist COMMATK_expr 
+
+	IDTK  shift 36
+	CONTK  shift 52
+	LPARENTK  shift 53
+	UNARYTK  shift 49
+	.  error
+
+	expr  goto 129
+	vbl  goto 51
+	procfunc  goto 54
+	simexp  goto 47
+	term  goto 48
+	factor  goto 50
+
+state 119
+	subhead :  FUNCTIONTK IDTK args COLONTK STDTYPETK_    (18)
+
+	.  reduce 18
+
+
+state 120
+	args :  LPARENTK dcls RPARENTK_    (20)
+
+	.  reduce 20
+
+
+state 121
+	arraytype :  ARRAYTK LEFTBRACKETTK CONTK_DOTDOTTK CONTK RIGHTBRACKETTK OFTK STDTYPETK 
+
+	DOTDOTTK  shift 130
+	.  error
+
+
+state 122
+	stmt :  IFTK expr then stmt else_stmt 
+
+	BEGINTK  shift 10
+	IDTK  shift 36
+	WRITETK  shift 33
+	WRITELNTK  shift 34
+	IFTK  shift 25
+	RETURNTK  shift 28
+	WHILETK  shift 35
+	READTK  shift 31
+	READLNTK  shift 32
+	.  error
+
+	compstmt  goto 30
+	stmt  goto 131
+	elstmt  goto 24
+	while  goto 26
+	vbl  goto 27
+	procfunc  goto 29
+
+state 123
+	else :  ELSETK_    (30)
+
+	.  reduce 30
+
+
+state 124
+	elstmt :  READTK $$38 LPARENTK vbllist RPARENTK_    (39)
+
+	.  reduce 39
+
+
+state 125
+	vbllist :  vbllist COMMATK_vbl 
+
+	IDTK  shift 110
+	.  error
+
+	vbl  goto 132
+
+state 126
+	elstmt :  READLNTK $$40 LPARENTK vbllist RPARENTK_    (41)
+
+	.  reduce 41
+
+
+state 127
+	elstmt :  WRITETK $$44 LPARENTK exprlist RPARENTK_    (45)
+
+	.  reduce 45
+
+
+state 128
+	elstmt :  WRITELNTK $$46 LPARENTK exprlist RPARENTK_    (47)
+
+	.  reduce 47
+
+
+state 129
+	exprlist :  exprlist COMMATK expr_    (57)
+
+	.  reduce 57
+
+
+state 130
+	arraytype :  ARRAYTK LEFTBRACKETTK CONTK DOTDOTTK_CONTK RIGHTBRACKETTK OFTK STDTYPETK 
+
+	CONTK  shift 133
+	.  error
+
+
+state 131
+	stmt :  IFTK expr then stmt else stmt_    (26)
+
+	.  reduce 26
+
+
+state 132
+	vbllist :  vbllist COMMATK vbl_    (53)
+
+	.  reduce 53
+
+
+state 133
+	arraytype :  ARRAYTK LEFTBRACKETTK CONTK DOTDOTTK CONTK_RIGHTBRACKETTK OFTK STDTYPETK 
+
+	RIGHTBRACKETTK  shift 134
+	.  error
+
+
+state 134
+	arraytype :  ARRAYTK LEFTBRACKETTK CONTK DOTDOTTK CONTK RIGHTBRACKETTK_OFTK STDTYPETK 
+
+	OFTK  shift 135
+	.  error
+
+
+state 135
+	arraytype :  ARRAYTK LEFTBRACKETTK CONTK DOTDOTTK CONTK RIGHTBRACKETTK OFTK_STDTYPETK 
+
+	STDTYPETK  shift 136
+	.  error
+
+
+state 136
+	arraytype :  ARRAYTK LEFTBRACKETTK CONTK DOTDOTTK CONTK RIGHTBRACKETTK OFTK STDTYPETK_    (14)
+
+	.  reduce 14
+
+Rule not reduced:   $$42 :  
+Rule not reduced:   $$48 :  
+
+37/127 terminals, 34/600 nonterminals
+69/300 grammar rules, 137/1000 states
+1 shift/reduce, 2 reduce/reduce conflicts reported
+34/601 working sets used
+memory: states,etc. 297/2000, parser 189/4000
+77/3001 distinct lookahead sets
+73 extra closures
+182 shift entries, 1 exceptions
+76 goto entries
+84 entries saved by goto default
+Optimizer space used: input 484/2000, output 222/4000
+222 table entries, 53 zero
+maximum spread: 291, maximum offset: 291
