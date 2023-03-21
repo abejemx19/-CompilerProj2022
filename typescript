@@ -1,0 +1,22 @@
+Script started on April 29, 2022 03:44:03 PM EDT
+inouerx19@Solaris:~/epcproj$ ./flowg++ -o flow flow.cpp[8@./epc -lrt flow.p >[C[C[C[C[C[C[C[C[Cmake[K./epc -lrt flow.p > flow.cpp[8Pg++ -o flow[C[C[C[C[C[C[C[C[C[8@./epc -lrt flow.p >[C[C[C[C[C[C[C[C[C
+inouerx19@Solaris:~/epcproj$ ./epc -lrt flow.p > flow.cppflow[Kg++ -o flow flow.cpp
+inouerx19@Solaris:~/epcproj$ g++ -o flow flow.cpp[8@./epc -lrt flow.p >[C[C[C[C[C[C[C[C[Cflow[K
+. 1
+2
+3
+4
+5
+6
+0
+6 
+0 
+6 
+0 
+6 
+4 
+5 
+6 
+4.5 
+inouerx19@Solaris:~/epcproj$ exit
+script done on April 29, 2022 03:45:57 PM EDT

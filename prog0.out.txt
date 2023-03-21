@@ -1,0 +1,39 @@
+//>>>> Begin Example Pascal Compiler <<<<
+#include "stackmachine.pro"
+//>>>> Controller::open_file()=prog0.p
+//>>>> Starting parser via ScanParser()
+//====LINE[    1]    program simple;
+//====LINE[    2]    var
+//====LINE[    3]        i:integer;
+//====LINE[    4]        j:integer;
+//====LINE[    5]        k:integer;
+//====LINE[    6]    begin
+push(9999);
+cout << pop <<endl;
+//====LINE[    7]        write(9999);
+push(2);
+push(123);
+assign;
+//====LINE[    8]        i := 123;
+push(3);
+push(45);
+assign;
+//====LINE[    9]        j := 45;
+push(4);
+push(2);
+deref;
+push(2);
+binary(*);
+assign;
+//====LINE[   10]        k:=i * 2;
+push(4);
+deref;
+cout << pop <<endl;
+//====LINE[   11]        write(k);
+push(3);
+deref;
+cout << pop <<endl;
+//====LINE[   12]        write(j)
+//====LINE[   13]    end.
+#include "stackmachine.epi"
+//>>>>  End  Example Pascal Compiler <<<<

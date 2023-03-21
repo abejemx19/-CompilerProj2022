@@ -1,0 +1,27 @@
+//>>>> Begin Example Pascal Compiler <<<<
+#include "stackmachine.pro"
+//>>>> Controller::open_file()=prog1.p
+********T O K E N    T R A C E  only *******
+//++++Token: LineNo=1 Token=257 Lexeme='program'
+//++++Token: LineNo=1 Token=265 Lexeme='sample'
+//++++Token: LineNo=1 Token=261 Lexeme=';'
+//++++Token: LineNo=2 Token=260 Lexeme='var'
+//++++Token: LineNo=2 Token=265 Lexeme='i'
+//++++Token: LineNo=2 Token=277 Lexeme=','
+//++++Token: LineNo=2 Token=265 Lexeme='j'
+//++++Token: LineNo=2 Token=262 Lexeme=':'
+//++++Token: LineNo=2 Token=276 Lexeme='integer'
+//++++Token: LineNo=2 Token=261 Lexeme=';'
+//++++Token: LineNo=3 Token=258 Lexeme='begin'
+//++++Token: LineNo=4 Token=265 Lexeme='i'
+//++++Token: LineNo=4 Token=263 Lexeme=':='
+//++++Token: LineNo=4 Token=266 Lexeme='123'
+//++++Token: LineNo=4 Token=261 Lexeme=';'
+//++++Token: LineNo=5 Token=265 Lexeme='j'
+//++++Token: LineNo=5 Token=263 Lexeme=':='
+//++++Token: LineNo=5 Token=266 Lexeme='345'
+//++++Token: LineNo=8 Token=259 Lexeme='end'
+//++++Token: LineNo=8 Token=264 Lexeme='.'
+********END TOKEN TRACE
+#include "stackmachine.epi"
+//>>>>  End  Example Pascal Compiler <<<<
